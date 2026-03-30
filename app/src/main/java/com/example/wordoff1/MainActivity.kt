@@ -6,8 +6,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -23,6 +24,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.Alignment
 
+data class F1Data(
+    val title: String,
+    val description: String,
+    val image: Int
+)
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -36,78 +43,97 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun DetailScreen() {
 
-    Column(
-        modifier = Modifier
-            .padding(16.dp)
-            .verticalScroll(rememberScrollState())
+    val dataList = listOf(
+        F1Data("Max Verstappen","Juara dunia Red Bull Racing",R.drawable.maxverstappen),
+        F1Data("Lewis Hamilton","Legenda Mercedes",R.drawable.lewishamilton),
+        F1Data("Charles Leclerc","Pembalap Ferrari",R.drawable.charlesleclerc),
+        F1Data("Monaco Grand Prix","Balapan ikonik",R.drawable.monacograndprix),
+        F1Data("Sejarah Formula 1","Dimulai tahun 1950",R.drawable.sejarahformula1_1950)
+    )
+
+    LazyColumn(
+        modifier = Modifier.padding(16.dp)
     ) {
 
-        Text(
-            text = "World of F1 – Informasi & Edukasi",
-            style = MaterialTheme.typography.headlineMedium,
-            fontWeight = FontWeight.Bold,
-            color = Color.Red
-        )
+        item {
+            Text(
+                text = "World of F1 – Informasi & Edukasi",
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = Color.Red
+            )
 
-        Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-        Text("Fazrika Helva Alimni")
-        Text("2477051017")
+            Text("Fazrika Helva Alimni")
+            Text("2477051017")
 
-        Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        F1Item(
-            title = "Max Verstappen",
-            description = "Juara dunia bersama Red Bull Racing",
-            image = R.drawable.maxverstappen
-        )
+            Text("Featured", fontWeight = FontWeight.Bold)
 
-        Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(8.dp))
+        }
 
-        F1Item(
-            title = "Lewis Hamilton",
-            description = "Legenda Mantan Tim Mercedes AMG Petronas",
-            image = R.drawable.lewishamilton
-        )
+        item {
+            LazyRow {
+                items(dataList) { item ->
+                    FeaturedItem(item)
+                }
+            }
+        }
 
-        Spacer(modifier = Modifier.height(16.dp))
+        item {
+            Spacer(modifier = Modifier.height(16.dp))
+            Text("Semua Data", fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(8.dp))
+        }
 
-        F1Item(
-            title = "Charles Leclerc",
-            description = "Pembalap utama Ferrari",
-            image = R.drawable.charlesleclerc
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        F1Item(
-            title = "Monaco Grand Prix",
-            description = "Balapan ikonik Formula 1",
-            image = R.drawable.monacograndprix
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        F1Item(
-            title = "Sejarah Formula 1",
-            description = "Dimulai tahun 1950 dan berkembang global",
-            image = R.drawable.sejarahformula1_1950
-        )
+        items(dataList) { item ->
+            F1Item(item)
+        }
     }
 }
 
 @Composable
-fun F1Item(title: String, description: String, image: Int) {
-    
+fun FeaturedItem(item: F1Data) {
+
+    Card(
+        modifier = Modifier
+            .padding(end = 12.dp)
+            .width(200.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Black
+        )
+    ) {
+
+        Column(modifier = Modifier.padding(8.dp)) {
+
+            Image(
+                painter = painterResource(item.image),
+                contentDescription = item.title,
+                modifier = Modifier.height(120.dp)
+            )
+
+            Text(
+                item.title,
+                color = Color.White
+            )
+        }
+    }
+}
+
+@Composable
+fun F1Item(item: F1Data) {
+
     var isFavorite by remember { mutableStateOf(false) }
 
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 12.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.Black
-        ),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = 8.dp
         )
     ) {
 
@@ -119,8 +145,8 @@ fun F1Item(title: String, description: String, image: Int) {
             Box {
 
                 Image(
-                    painter = painterResource(id = image),
-                    contentDescription = title,
+                    painter = painterResource(id = item.image),
+                    contentDescription = item.title,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(180.dp)
@@ -152,13 +178,13 @@ fun F1Item(title: String, description: String, image: Int) {
             Spacer(modifier = Modifier.height(10.dp))
 
             Text(
-                text = title,
+                text = item.title,
                 fontWeight = FontWeight.Bold,
                 color = Color.White
             )
 
             Text(
-                text = description,
+                text = item.description,
                 color = Color.LightGray
             )
 
@@ -167,8 +193,7 @@ fun F1Item(title: String, description: String, image: Int) {
             Button(
                 onClick = { },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Red,
-                    contentColor = Color.White
+                    containerColor = Color.Red
                 )
             ) {
                 Text("Pelajari Lebih Lanjut")
