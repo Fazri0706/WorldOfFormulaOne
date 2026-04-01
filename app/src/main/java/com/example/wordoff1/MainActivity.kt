@@ -4,25 +4,45 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material3.*
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.runtime.*
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.example.wordoff1.ui.theme.WorldOfF1Theme
+import com.example.worldoff1.ui.theme.WorldOfF1Theme
 
 data class F1Data(
     val title: String,
@@ -35,7 +55,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            DetailScreen()
+            WorldOfF1Theme {
+                DetailScreen()
+            }
         }
     }
 }
@@ -44,53 +66,77 @@ class MainActivity : ComponentActivity() {
 fun DetailScreen() {
 
     val dataList = listOf(
-        F1Data("Max Verstappen","Juara dunia Red Bull Racing",R.drawable.maxverstappen),
-        F1Data("Lewis Hamilton","Legenda Mercedes",R.drawable.lewishamilton),
-        F1Data("Charles Leclerc","Pembalap Ferrari",R.drawable.charlesleclerc),
-        F1Data("Monaco Grand Prix","Balapan ikonik",R.drawable.monacograndprix),
-        F1Data("Sejarah Formula 1","Dimulai tahun 1950",R.drawable.sejarahformula1_1950)
+        F1Data("Max Verstappen", "Juara dunia Red Bull Racing", R.drawable.maxverstappen),
+        F1Data("Lewis Hamilton", "Legenda Mercedes", R.drawable.lewishamilton),
+        F1Data("Charles Leclerc", "Pembalap Ferrari", R.drawable.charlesleclerc),
+        F1Data("Monaco Grand Prix", "Balapan ikonik", R.drawable.monacograndprix),
+        F1Data("Sejarah Formula 1", "Dimulai tahun 1950", R.drawable.sejarahformula1_1950)
     )
 
-    LazyColumn(
-        modifier = Modifier.padding(16.dp)
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                Brush.verticalGradient(
+                    listOf(
+                        MaterialTheme.colorScheme.background,
+                        MaterialTheme.colorScheme.surface
+                    )
+                )
+            )
     ) {
 
-        item {
-            Text(
-                text = "World of F1 – Informasi & Edukasi",
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold,
-                color = Color.Red
-            )
+        LazyColumn(
+            modifier = Modifier.padding(16.dp)
+        ) {
 
-            Spacer(modifier = Modifier.height(8.dp))
+            item {
+                Text(
+                    text = "World of F1 – Informasi & Edukasi",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
 
-            Text("Fazrika Helva Alimni")
-            Text("2477051017")
+                Divider(
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    color = MaterialTheme.colorScheme.primary
+                )
 
-            Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(12.dp))
 
-            Text("Featured", fontWeight = FontWeight.Bold)
+                Text("Fazrika Helva Alimni")
+                Text("2477051017")
 
-            Spacer(modifier = Modifier.height(8.dp))
-        }
+                Spacer(modifier = Modifier.height(12.dp))
 
-        item {
-            LazyRow {
-                items(dataList) { item ->
-                    FeaturedItem(item)
+                Text(
+                    "Featured",
+                    style = MaterialTheme.typography.titleLarge
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+            }
+
+            item {
+                LazyRow {
+                    items(dataList) { item ->
+                        FeaturedItem(item)
+                    }
                 }
             }
-        }
 
-        item {
-            Spacer(modifier = Modifier.height(16.dp))
-            Text("Semua Data", fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(8.dp))
-        }
+            item {
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    "Semua Data",
+                    style = MaterialTheme.typography.titleLarge
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+            }
 
-        items(dataList) { item ->
-            F1Item(item)
+            items(dataList) { item ->
+                F1Item(item)
+            }
         }
     }
 }
@@ -102,8 +148,10 @@ fun FeaturedItem(item: F1Data) {
         modifier = Modifier
             .padding(end = 12.dp)
             .width(200.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(6.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.Black
+            containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
 
@@ -112,12 +160,18 @@ fun FeaturedItem(item: F1Data) {
             Image(
                 painter = painterResource(item.image),
                 contentDescription = item.title,
-                modifier = Modifier.height(120.dp)
+                modifier = Modifier
+                    .height(120.dp)
+                    .fillMaxWidth(),
+                contentScale = ContentScale.Crop
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Text(
                 item.title,
-                color = Color.White
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
@@ -132,8 +186,10 @@ fun F1Item(item: F1Data) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(bottom = 12.dp),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(6.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.Black
+            containerColor = MaterialTheme.colorScheme.surface
         )
     ) {
 
@@ -145,11 +201,12 @@ fun F1Item(item: F1Data) {
             Box {
 
                 Image(
-                    painter = painterResource(id = item.image),
+                    painter = painterResource(item.image),
                     contentDescription = item.title,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(180.dp)
+                        .height(180.dp),
+                    contentScale = ContentScale.Crop
                 )
 
                 IconButton(
@@ -168,32 +225,34 @@ fun F1Item(item: F1Data) {
 
                         tint =
                             if (isFavorite)
-                                Color.Red
+                                MaterialTheme.colorScheme.primary
                             else
-                                Color.White
+                                MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Text(
                 text = item.title,
-                fontWeight = FontWeight.Bold,
-                color = Color.White
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Text(
                 text = item.description,
-                color = Color.LightGray
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
-            Spacer(modifier = Modifier.height(10.dp))
+            Spacer(modifier = Modifier.height(12.dp))
 
             Button(
                 onClick = { },
+                shape = RoundedCornerShape(12.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Red
+                    containerColor = MaterialTheme.colorScheme.primary
                 )
             ) {
                 Text("Pelajari Lebih Lanjut")
@@ -205,5 +264,7 @@ fun F1Item(item: F1Data) {
 @Preview(showBackground = true)
 @Composable
 fun DetailPreview() {
-    DetailScreen()
+    WorldOfF1Theme {
+        DetailScreen()
+    }
 }
