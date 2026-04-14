@@ -5,14 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -20,20 +13,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.*
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -42,7 +24,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.wordoff1.ui.theme.WorldOfF1Theme
-import com.example.worldoff1.ui.theme.WorldOfF1Theme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 data class F1Data(
     val title: String,
@@ -64,6 +47,10 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun DetailScreen() {
+
+    var isLoading by remember { mutableStateOf(false) }
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val dataList = listOf(
         F1Data("Max Verstappen", "Juara dunia Red Bull Racing", R.drawable.maxverstappen),
@@ -97,8 +84,9 @@ fun DetailScreen() {
                     color = MaterialTheme.colorScheme.primary
                 )
 
-                Divider(
+                HorizontalDivider(
                     modifier = Modifier.padding(vertical = 8.dp),
+                    thickness = DividerDefaults.Thickness,
                     color = MaterialTheme.colorScheme.primary
                 )
 
@@ -109,11 +97,7 @@ fun DetailScreen() {
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                Text(
-                    "Featured",
-                    style = MaterialTheme.typography.titleLarge
-                )
-
+                Text("Featured", style = MaterialTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
@@ -127,17 +111,34 @@ fun DetailScreen() {
 
             item {
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    "Semua Data",
-                    style = MaterialTheme.typography.titleLarge
-                )
+                Text("Semua Data", style = MaterialTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(12.dp))
             }
 
             items(dataList) { item ->
-                F1Item(item)
+                F1Item(
+                    item = item,
+                    isLoading = isLoading,
+                    onClick = {
+                        coroutineScope.launch {
+                            isLoading = true
+                            delay(2000)
+
+                            snackbarHostState.showSnackbar(
+                                "Informasi ${item.title} berhasil dimuat!"
+                            )
+
+                            isLoading = false
+                        }
+                    }
+                )
             }
         }
+
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.align(Alignment.BottomCenter)
+        )
     }
 }
 
@@ -170,15 +171,18 @@ fun FeaturedItem(item: F1Data) {
 
             Text(
                 item.title,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurface
+                style = MaterialTheme.typography.bodyMedium
             )
         }
     }
 }
 
 @Composable
-fun F1Item(item: F1Data) {
+fun F1Item(
+    item: F1Data,
+    isLoading: Boolean,
+    onClick: () -> Unit
+) {
 
     var isFavorite by remember { mutableStateOf(false) }
 
@@ -187,10 +191,7 @@ fun F1Item(item: F1Data) {
             .fillMaxWidth()
             .padding(bottom = 12.dp),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(6.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+        elevation = CardDefaults.cardElevation(6.dp)
     ) {
 
         Column(
@@ -220,9 +221,7 @@ fun F1Item(item: F1Data) {
                                 Icons.Filled.Favorite
                             else
                                 Icons.Outlined.FavoriteBorder,
-
                         contentDescription = "Favorite",
-
                         tint =
                             if (isFavorite)
                                 MaterialTheme.colorScheme.primary
@@ -236,26 +235,32 @@ fun F1Item(item: F1Data) {
 
             Text(
                 text = item.title,
-                style = MaterialTheme.typography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface
+                style = MaterialTheme.typography.titleLarge
             )
 
             Text(
                 text = item.description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                style = MaterialTheme.typography.bodyMedium
             )
 
             Spacer(modifier = Modifier.height(12.dp))
 
             Button(
-                onClick = { },
-                shape = RoundedCornerShape(12.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
+                onClick = onClick,
+                enabled = !isLoading,
+                shape = RoundedCornerShape(12.dp)
             ) {
-                Text("Pelajari Lebih Lanjut")
+
+                if (isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(20.dp),
+                        strokeWidth = 2.dp
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Memproses...")
+                } else {
+                    Text("Pelajari Lebih Lanjut")
+                }
             }
         }
     }

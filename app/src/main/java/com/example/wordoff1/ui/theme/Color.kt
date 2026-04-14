@@ -1,4 +1,4 @@
-package com.example.worldoff1.ui.theme
+package com.example.wordoff1.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
