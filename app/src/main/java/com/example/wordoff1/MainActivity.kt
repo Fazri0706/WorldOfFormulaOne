@@ -14,7 +14,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.*
-import androidx.compose.material3.Divider
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.wordoff1.ui.theme.WorldOfF1Theme
+import com.example.worldoff1.R
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -85,9 +85,7 @@ fun DetailScreen() {
                 )
 
                 HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 8.dp),
-                    thickness = DividerDefaults.Thickness,
-                    color = MaterialTheme.colorScheme.primary
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
@@ -122,7 +120,7 @@ fun DetailScreen() {
                     onClick = {
                         coroutineScope.launch {
                             isLoading = true
-                            delay(2000)
+                            delay(1500)
 
                             snackbarHostState.showSnackbar(
                                 "Informasi ${item.title} berhasil dimuat!"
@@ -150,16 +148,13 @@ fun FeaturedItem(item: F1Data) {
             .padding(end = 12.dp)
             .width(200.dp),
         shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(6.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
+        elevation = CardDefaults.cardElevation(6.dp)
     ) {
 
         Column(modifier = Modifier.padding(8.dp)) {
 
             Image(
-                painter = painterResource(item.image),
+                painter = painterResource(id = item.image),
                 contentDescription = item.title,
                 modifier = Modifier
                     .height(120.dp)
@@ -169,10 +164,7 @@ fun FeaturedItem(item: F1Data) {
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            Text(
-                item.title,
-                style = MaterialTheme.typography.bodyMedium
-            )
+            Text(item.title)
         }
     }
 }
@@ -202,7 +194,7 @@ fun F1Item(
             Box {
 
                 Image(
-                    painter = painterResource(item.image),
+                    painter = painterResource(id = item.image),
                     contentDescription = item.title,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -216,39 +208,25 @@ fun F1Item(
                 ) {
 
                     Icon(
-                        imageVector =
-                            if (isFavorite)
-                                Icons.Filled.Favorite
-                            else
-                                Icons.Outlined.FavoriteBorder,
-                        contentDescription = "Favorite",
-                        tint =
-                            if (isFavorite)
-                                MaterialTheme.colorScheme.primary
-                            else
-                                MaterialTheme.colorScheme.onSurface
+                        imageVector = if (isFavorite)
+                            Icons.Filled.Favorite
+                        else
+                            Icons.Outlined.FavoriteBorder,
+                        contentDescription = "Favorite"
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
-            Text(
-                text = item.title,
-                style = MaterialTheme.typography.titleLarge
-            )
-
-            Text(
-                text = item.description,
-                style = MaterialTheme.typography.bodyMedium
-            )
+            Text(item.title, style = MaterialTheme.typography.titleLarge)
+            Text(item.description)
 
             Spacer(modifier = Modifier.height(12.dp))
 
             Button(
                 onClick = onClick,
-                enabled = !isLoading,
-                shape = RoundedCornerShape(12.dp)
+                enabled = !isLoading
             ) {
 
                 if (isLoading) {
@@ -257,9 +235,9 @@ fun F1Item(
                         strokeWidth = 2.dp
                     )
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Memproses...")
+                    Text("Loading...")
                 } else {
-                    Text("Pelajari Lebih Lanjut")
+                    Text("Pelajari")
                 }
             }
         }
@@ -268,7 +246,7 @@ fun F1Item(
 
 @Preview(showBackground = true)
 @Composable
-fun DetailPreview() {
+fun PreviewApp() {
     WorldOfF1Theme {
         DetailScreen()
     }
